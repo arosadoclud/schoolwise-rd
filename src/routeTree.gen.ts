@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShellPadresRouteImport } from './routes/_shell.padres'
 import { Route as ShellEstudiantesRouteImport } from './routes/_shell.estudiantes'
 import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
+import { Route as ShellCursosRouteImport } from './routes/_shell.cursos'
+import { Route as ShellConceptosRouteImport } from './routes/_shell.conceptos'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -29,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShellPadresRoute = ShellPadresRouteImport.update({
+  id: '/padres',
+  path: '/padres',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellEstudiantesRoute = ShellEstudiantesRouteImport.update({
   id: '/estudiantes',
   path: '/estudiantes',
@@ -39,39 +47,75 @@ const ShellDashboardRoute = ShellDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellCursosRoute = ShellCursosRouteImport.update({
+  id: '/cursos',
+  path: '/cursos',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellConceptosRoute = ShellConceptosRouteImport.update({
+  id: '/conceptos',
+  path: '/conceptos',
+  getParentRoute: () => ShellRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/conceptos': typeof ShellConceptosRoute
+  '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/padres': typeof ShellPadresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/conceptos': typeof ShellConceptosRoute
+  '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/padres': typeof ShellPadresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_shell': typeof ShellRouteWithChildren
   '/login': typeof LoginRoute
+  '/_shell/conceptos': typeof ShellConceptosRoute
+  '/_shell/cursos': typeof ShellCursosRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/estudiantes': typeof ShellEstudiantesRoute
+  '/_shell/padres': typeof ShellPadresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard' | '/estudiantes'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/conceptos'
+    | '/cursos'
+    | '/dashboard'
+    | '/estudiantes'
+    | '/padres'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard' | '/estudiantes'
+  to:
+    | '/'
+    | '/login'
+    | '/conceptos'
+    | '/cursos'
+    | '/dashboard'
+    | '/estudiantes'
+    | '/padres'
   id:
     | '__root__'
     | '/'
     | '/_shell'
     | '/login'
+    | '/_shell/conceptos'
+    | '/_shell/cursos'
     | '/_shell/dashboard'
     | '/_shell/estudiantes'
+    | '/_shell/padres'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -103,6 +147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_shell/padres': {
+      id: '/_shell/padres'
+      path: '/padres'
+      fullPath: '/padres'
+      preLoaderRoute: typeof ShellPadresRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/estudiantes': {
       id: '/_shell/estudiantes'
       path: '/estudiantes'
@@ -117,17 +168,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellDashboardRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/cursos': {
+      id: '/_shell/cursos'
+      path: '/cursos'
+      fullPath: '/cursos'
+      preLoaderRoute: typeof ShellCursosRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/conceptos': {
+      id: '/_shell/conceptos'
+      path: '/conceptos'
+      fullPath: '/conceptos'
+      preLoaderRoute: typeof ShellConceptosRouteImport
+      parentRoute: typeof ShellRoute
+    }
   }
 }
 
 interface ShellRouteChildren {
+  ShellConceptosRoute: typeof ShellConceptosRoute
+  ShellCursosRoute: typeof ShellCursosRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
   ShellEstudiantesRoute: typeof ShellEstudiantesRoute
+  ShellPadresRoute: typeof ShellPadresRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
+  ShellConceptosRoute: ShellConceptosRoute,
+  ShellCursosRoute: ShellCursosRoute,
   ShellDashboardRoute: ShellDashboardRoute,
   ShellEstudiantesRoute: ShellEstudiantesRoute,
+  ShellPadresRoute: ShellPadresRoute,
 }
 
 const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)

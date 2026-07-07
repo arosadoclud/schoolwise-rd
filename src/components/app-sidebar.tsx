@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, GraduationCap, Users, BookOpen, Tags, CalendarClock,
   Receipt, AlertTriangle, Handshake, ClipboardList, Megaphone, CheckSquare,
@@ -9,6 +9,7 @@ import {
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { logout } from "@/lib/session";
 
 const groups = [
   {
@@ -48,8 +49,14 @@ const groups = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const navigate = useNavigate();
   const isActive = (url: string) =>
     url === "/dashboard" ? pathname === "/" || pathname === "/dashboard" : pathname.startsWith(url);
+
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/login", replace: true });
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -96,11 +103,9 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Cerrar sesión">
-              <Link to="/login">
-                <LogOut className="h-4 w-4" />
-                <span>Cerrar sesión</span>
-              </Link>
+            <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión" data-testid="logout-button">
+              <LogOut className="h-4 w-4" />
+              <span>Cerrar sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

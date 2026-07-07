@@ -1,15 +1,30 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
+import { isAuthenticated } from "@/lib/session";
 
 export const Route = createFileRoute("/_shell")({
   component: ShellLayout,
 });
 
 function ShellLayout() {
+  const navigate = useNavigate();
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate({ to: "/login", replace: true });
+    } else {
+      setAuthed(true);
+    }
+  }, [navigate]);
+
+  if (!authed) return null;
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">

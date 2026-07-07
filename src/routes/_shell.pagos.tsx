@@ -1,32 +1,77 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Printer, X } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { pagos, estudianteById, tutorById, configuracionDefault, formatRD } from "@/lib/mock-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import { tutorById, conceptos, configuracionDefault, formatRD, type MetodoPago } from "@/lib/mock-data";
+import { useAppState, addPago, findEstudiante, type PagoInput } from "@/lib/store";
 
 export const Route = createFileRoute("/_shell/pagos")({
   head: () => ({ meta: [{ title: "Pagos — SchoolPay RD" }] }),
   component: PagosPage,
 });
 
+const METODOS: MetodoPago[] = ["Efectivo", "Transferencia", "Depósito", "Tarjeta simulada"];
+
+function emptyPago(): PagoInput {
+  return { estudianteId: "", concepto: conceptos[0].nombre, monto: conceptos[0].monto, metodo: "Efectivo", banco: "", referencia: "" };
+}
+
 function PagosPage() {
+  const { pagos, estudiantes } = useAppState();
   const [reciboId, setReciboId] = useState<string | null>(null);
-  const pago = pagos.find((p) => p.id === reciboId);
-  const est = pago ? estudianteById(pago.estudianteId) : null;
-  const tutor = pago ? tutorById(pago.tutorId) : null;
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState<PagoInput>(emptyPago());
+
   const cfg = configuracionDefault;
+  const pago = pagos.find((p) => p.id === reciboId);
+  const est = pago ? findEstudiante(estudiantes, pago.estudianteId) : null;
+  const tutor = pago ? tutorById(pago.tutorId) : null;
+
+  const activos = useMemo(() => estudiantes.filter((e) => e.estado !== "Retirado"), [estudiantes]);
+  const seleccionado = findEstudiante(estudiantes, form.estudianteId);
+
+  function set<K extends keyof PagoInput>(key: K, value: PagoInput[K]) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function openNew() {
+    setForm(emptyPago());
+    setFormOpen(true);
+  }
+
+  function submit(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!form.estudianteId) {
+      toast.error("Seleccione un estudiante.");
+      return;
+    }
+    if (!form.monto || form.monto <= 0) {
+      toast.error("Ingrese un monto válido.");
+      return;
+    }
+    const nuevo = addPago({ ...form, estado: "Validado" });
+    toast.success(`Pago ${nuevo.recibo} registrado y validado por ${formatRD(nuevo.monto)}.`);
+    setFormOpen(false);
+    setReciboId(nuevo.id);
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Pagos"
         subtitle="Registre pagos, valide comprobantes y emita recibos"
-        actions={<Button><Plus className="h-4 w-4" /> Registrar pago</Button>}
+        actions={<Button onClick={openNew} data-testid="registrar-pago-btn"><Plus className="h-4 w-4" /> Registrar pago</Button>}
       />
 
       <Card>
@@ -47,12 +92,12 @@ function PagosPage() {
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody data-testid="pagos-tbody">
               {pagos.map((p) => (
-                <TableRow key={p.id}>
+                <TableRow key={p.id} data-testid={`pago-row-${p.id}`}>
                   <TableCell className="font-mono text-xs">{p.recibo}</TableCell>
-                  <TableCell className="font-medium">{estudianteById(p.estudianteId)?.nombre}</TableCell>
-                  <TableCell className="text-sm">{tutorById(p.tutorId)?.nombre}</TableCell>
+                  <TableCell className="font-medium">{findEstudiante(estudiantes, p.estudianteId)?.nombre ?? "—"}</TableCell>
+                  <TableCell className="text-sm">{tutorById(p.tutorId)?.nombre ?? "—"}</TableCell>
                   <TableCell>{p.concepto}</TableCell>
                   <TableCell>{p.metodo}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.banco ?? "—"}</TableCell>
@@ -61,7 +106,7 @@ function PagosPage() {
                   <TableCell className="text-right font-semibold">{formatRD(p.monto)}</TableCell>
                   <TableCell><StatusBadge status={p.estado} /></TableCell>
                   <TableCell className="text-right">
-                    <Button size="sm" variant="outline" onClick={() => setReciboId(p.id)}>
+                    <Button size="sm" variant="outline" onClick={() => setReciboId(p.id)} data-testid={`ver-recibo-${p.id}`}>
                       <Printer className="h-4 w-4" /> Recibo
                     </Button>
                   </TableCell>
@@ -72,6 +117,71 @@ function PagosPage() {
         </CardContent>
       </Card>
 
+      {/* Modal registrar pago */}
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-w-lg" data-testid="pago-form-dialog">
+          <DialogHeader>
+            <DialogTitle>Registrar pago</DialogTitle>
+            <DialogDescription>El pago se registra como validado y reduce el balance del estudiante.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <Label>Estudiante</Label>
+              <Select value={form.estudianteId} onValueChange={(v) => set("estudianteId", v)}>
+                <SelectTrigger data-testid="pago-estudiante"><SelectValue placeholder="Seleccione un estudiante" /></SelectTrigger>
+                <SelectContent>
+                  {activos.map((e) => <SelectItem key={e.id} value={e.id}>{e.nombre} — {e.codigo}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {seleccionado && (
+                <p className="mt-1 text-xs text-muted-foreground" data-testid="pago-balance-actual">
+                  Balance actual: <span className={seleccionado.balance > 0 ? "font-medium text-destructive" : "font-medium text-success"}>{formatRD(seleccionado.balance)}</span>
+                </p>
+              )}
+            </div>
+            <div>
+              <Label>Concepto</Label>
+              <Select value={form.concepto} onValueChange={(v) => { const c = conceptos.find((x) => x.nombre === v); set("concepto", v); if (c) set("monto", c.monto); }}>
+                <SelectTrigger data-testid="pago-concepto"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {conceptos.map((c) => <SelectItem key={c.id} value={c.nombre}>{c.nombre} ({formatRD(c.monto)})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Método de pago</Label>
+                <Select value={form.metodo} onValueChange={(v) => set("metodo", v as MetodoPago)}>
+                  <SelectTrigger data-testid="pago-metodo"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {METODOS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="pago-monto">Monto (RD$)</Label>
+                <Input id="pago-monto" type="number" min={1} value={form.monto} onChange={(e) => set("monto", Number(e.target.value))} data-testid="pago-monto" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="pago-banco">Banco (opcional)</Label>
+                <Input id="pago-banco" value={form.banco} onChange={(e) => set("banco", e.target.value)} placeholder="Banco Popular…" data-testid="pago-banco" />
+              </div>
+              <div>
+                <Label htmlFor="pago-referencia">Referencia (opcional)</Label>
+                <Input id="pago-referencia" value={form.referencia} onChange={(e) => set("referencia", e.target.value)} placeholder="TX…" data-testid="pago-referencia" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>Cancelar</Button>
+              <Button type="submit" data-testid="guardar-pago-btn">Guardar pago</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Recibo */}
       <Dialog open={!!pago} onOpenChange={(o) => !o && setReciboId(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>

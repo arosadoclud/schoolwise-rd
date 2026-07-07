@@ -1,0 +1,7 @@
+{
+  "name": "schoolpay-frontend-launcher",
+  "private": true,
+  "scripts": {
+    "start": "node ../scripts/dev-with-proxy.cjs"
+  }
+}

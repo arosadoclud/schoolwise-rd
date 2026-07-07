@@ -4,6 +4,7 @@ import { GraduationCap, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { login as startSession } from "@/lib/session";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -24,6 +25,7 @@ function LoginPage() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (email === "admin@schoolpayrd.com" && password === "Admin123!") {
+      startSession(email);
       navigate({ to: "/dashboard" });
     } else {
       setError("Credenciales inválidas. Use las credenciales demo.");

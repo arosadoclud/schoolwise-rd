@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShellTransporteRouteImport } from './routes/_shell.transporte'
 import { Route as ShellPagosRouteImport } from './routes/_shell.pagos'
 import { Route as ShellPadresRouteImport } from './routes/_shell.padres'
 import { Route as ShellMorosidadRouteImport } from './routes/_shell.morosidad'
@@ -21,6 +22,8 @@ import { Route as ShellEstudiantesRouteImport } from './routes/_shell.estudiante
 import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
 import { Route as ShellCursosRouteImport } from './routes/_shell.cursos'
 import { Route as ShellConceptosRouteImport } from './routes/_shell.conceptos'
+import { Route as ShellComunicadosRouteImport } from './routes/_shell.comunicados'
+import { Route as ShellAsistenciaRouteImport } from './routes/_shell.asistencia'
 import { Route as ShellAcuerdosRouteImport } from './routes/_shell.acuerdos'
 
 const LoginRoute = LoginRouteImport.update({
@@ -36,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ShellTransporteRoute = ShellTransporteRouteImport.update({
+  id: '/transporte',
+  path: '/transporte',
+  getParentRoute: () => ShellRoute,
 } as any)
 const ShellPagosRoute = ShellPagosRouteImport.update({
   id: '/pagos',
@@ -82,6 +90,16 @@ const ShellConceptosRoute = ShellConceptosRouteImport.update({
   path: '/conceptos',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellComunicadosRoute = ShellComunicadosRouteImport.update({
+  id: '/comunicados',
+  path: '/comunicados',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellAsistenciaRoute = ShellAsistenciaRouteImport.update({
+  id: '/asistencia',
+  path: '/asistencia',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellAcuerdosRoute = ShellAcuerdosRouteImport.update({
   id: '/acuerdos',
   path: '/acuerdos',
@@ -92,6 +110,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/acuerdos': typeof ShellAcuerdosRoute
+  '/asistencia': typeof ShellAsistenciaRoute
+  '/comunicados': typeof ShellComunicadosRoute
   '/conceptos': typeof ShellConceptosRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
@@ -101,11 +121,14 @@ export interface FileRoutesByFullPath {
   '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
+  '/transporte': typeof ShellTransporteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/acuerdos': typeof ShellAcuerdosRoute
+  '/asistencia': typeof ShellAsistenciaRoute
+  '/comunicados': typeof ShellComunicadosRoute
   '/conceptos': typeof ShellConceptosRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
@@ -115,6 +138,7 @@ export interface FileRoutesByTo {
   '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
+  '/transporte': typeof ShellTransporteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,6 +146,8 @@ export interface FileRoutesById {
   '/_shell': typeof ShellRouteWithChildren
   '/login': typeof LoginRoute
   '/_shell/acuerdos': typeof ShellAcuerdosRoute
+  '/_shell/asistencia': typeof ShellAsistenciaRoute
+  '/_shell/comunicados': typeof ShellComunicadosRoute
   '/_shell/conceptos': typeof ShellConceptosRoute
   '/_shell/cursos': typeof ShellCursosRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
@@ -131,6 +157,7 @@ export interface FileRoutesById {
   '/_shell/morosidad': typeof ShellMorosidadRoute
   '/_shell/padres': typeof ShellPadresRoute
   '/_shell/pagos': typeof ShellPagosRoute
+  '/_shell/transporte': typeof ShellTransporteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -138,6 +165,8 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/acuerdos'
+    | '/asistencia'
+    | '/comunicados'
     | '/conceptos'
     | '/cursos'
     | '/dashboard'
@@ -147,11 +176,14 @@ export interface FileRouteTypes {
     | '/morosidad'
     | '/padres'
     | '/pagos'
+    | '/transporte'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/acuerdos'
+    | '/asistencia'
+    | '/comunicados'
     | '/conceptos'
     | '/cursos'
     | '/dashboard'
@@ -161,12 +193,15 @@ export interface FileRouteTypes {
     | '/morosidad'
     | '/padres'
     | '/pagos'
+    | '/transporte'
   id:
     | '__root__'
     | '/'
     | '/_shell'
     | '/login'
     | '/_shell/acuerdos'
+    | '/_shell/asistencia'
+    | '/_shell/comunicados'
     | '/_shell/conceptos'
     | '/_shell/cursos'
     | '/_shell/dashboard'
@@ -176,6 +211,7 @@ export interface FileRouteTypes {
     | '/_shell/morosidad'
     | '/_shell/padres'
     | '/_shell/pagos'
+    | '/_shell/transporte'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -206,6 +242,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_shell/transporte': {
+      id: '/_shell/transporte'
+      path: '/transporte'
+      fullPath: '/transporte'
+      preLoaderRoute: typeof ShellTransporteRouteImport
+      parentRoute: typeof ShellRoute
     }
     '/_shell/pagos': {
       id: '/_shell/pagos'
@@ -270,6 +313,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellConceptosRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/comunicados': {
+      id: '/_shell/comunicados'
+      path: '/comunicados'
+      fullPath: '/comunicados'
+      preLoaderRoute: typeof ShellComunicadosRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/asistencia': {
+      id: '/_shell/asistencia'
+      path: '/asistencia'
+      fullPath: '/asistencia'
+      preLoaderRoute: typeof ShellAsistenciaRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/acuerdos': {
       id: '/_shell/acuerdos'
       path: '/acuerdos'
@@ -282,6 +339,8 @@ declare module '@tanstack/react-router' {
 
 interface ShellRouteChildren {
   ShellAcuerdosRoute: typeof ShellAcuerdosRoute
+  ShellAsistenciaRoute: typeof ShellAsistenciaRoute
+  ShellComunicadosRoute: typeof ShellComunicadosRoute
   ShellConceptosRoute: typeof ShellConceptosRoute
   ShellCursosRoute: typeof ShellCursosRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
@@ -291,10 +350,13 @@ interface ShellRouteChildren {
   ShellMorosidadRoute: typeof ShellMorosidadRoute
   ShellPadresRoute: typeof ShellPadresRoute
   ShellPagosRoute: typeof ShellPagosRoute
+  ShellTransporteRoute: typeof ShellTransporteRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
   ShellAcuerdosRoute: ShellAcuerdosRoute,
+  ShellAsistenciaRoute: ShellAsistenciaRoute,
+  ShellComunicadosRoute: ShellComunicadosRoute,
   ShellConceptosRoute: ShellConceptosRoute,
   ShellCursosRoute: ShellCursosRoute,
   ShellDashboardRoute: ShellDashboardRoute,
@@ -304,6 +366,7 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellMorosidadRoute: ShellMorosidadRoute,
   ShellPadresRoute: ShellPadresRoute,
   ShellPagosRoute: ShellPagosRoute,
+  ShellTransporteRoute: ShellTransporteRoute,
 }
 
 const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)

@@ -8,7 +8,9 @@ import {
   cursos,
   type Estudiante,
   type Pago,
+  type PagoEvento,
   type Mensualidad,
+  type MensualidadEstado,
   type PagoEstado,
   type MetodoPago,
 } from "./mock-data";
@@ -21,10 +23,17 @@ export interface AppState {
   mensualidades: Mensualidad[];
 }
 
+function seedHistorial(p: Pago): PagoEvento[] {
+  const eventos: PagoEvento[] = [{ tipo: "Creado", fecha: p.fecha }];
+  if (p.estado === "Validado") eventos.push({ tipo: "Validado", fecha: p.fecha });
+  else if (p.estado === "Rechazado") eventos.push({ tipo: "Rechazado", fecha: p.fecha });
+  return eventos;
+}
+
 function seedState(): AppState {
   return {
     estudiantes: seedEstudiantes.map((e) => ({ ...e })),
-    pagos: seedPagos.map((p) => ({ ...p })),
+    pagos: seedPagos.map((p) => ({ ...p, historial: p.historial ?? seedHistorial(p) })),
     mensualidades: seedMensualidades.map((m) => ({ ...m })),
   };
 }
@@ -147,6 +156,9 @@ export function addPago(data: PagoInput): Pago {
   const idNum = maxNum(state.pagos.map((p) => p.id)) + 1;
   const reciboNum = maxNum(state.pagos.map((p) => p.recibo)) + 1;
   const estado: PagoEstado = data.estado ?? "Validado";
+  const fecha = new Date().toISOString().slice(0, 10);
+  const historial: PagoEvento[] = [{ tipo: "Creado", fecha }];
+  if (estado === "Validado") historial.push({ tipo: "Validado", fecha });
   const pago: Pago = {
     id: `P${String(idNum).padStart(4, "0")}`,
     recibo: `REC-${reciboNum}`,
@@ -157,8 +169,9 @@ export function addPago(data: PagoInput): Pago {
     metodo: data.metodo,
     banco: data.banco || undefined,
     referencia: data.referencia || undefined,
-    fecha: new Date().toISOString().slice(0, 10),
+    fecha,
     estado,
+    historial,
   };
 
   let estudiantes = state.estudiantes;
@@ -171,6 +184,40 @@ export function addPago(data: PagoInput): Pago {
   setState({ ...state, pagos: [pago, ...state.pagos], estudiantes });
   return pago;
 }
+
+// Cambia el estado de un pago manteniendo coherente el balance del estudiante.
+// El balance refleja la suma de los pagos "Validado": al validar se reduce, al
+// dejar de estar validado (anular/rechazar) se revierte.
+export function setPagoEstado(id: string, nuevoEstado: PagoEstado) {
+  const pago = state.pagos.find((p) => p.id === id);
+  if (!pago || pago.estado === nuevoEstado) return;
+  const fecha = new Date().toISOString().slice(0, 10);
+  const eventoTipo = nuevoEstado === "Pendiente de validación" ? "Creado" : nuevoEstado;
+
+  let estudiantes = state.estudiantes;
+  const eraValidado = pago.estado === "Validado";
+  const seraValidado = nuevoEstado === "Validado";
+  if (eraValidado && !seraValidado) {
+    estudiantes = estudiantes.map((e) =>
+      e.id === pago.estudianteId ? { ...e, balance: e.balance + pago.monto } : e,
+    );
+  } else if (!eraValidado && seraValidado) {
+    estudiantes = estudiantes.map((e) =>
+      e.id === pago.estudianteId ? { ...e, balance: Math.max(0, e.balance - pago.monto) } : e,
+    );
+  }
+
+  const pagos = state.pagos.map((p) =>
+    p.id === id
+      ? { ...p, estado: nuevoEstado, historial: [...(p.historial ?? []), { tipo: eventoTipo as PagoEvento["tipo"], fecha }] }
+      : p,
+  );
+  setState({ ...state, pagos, estudiantes });
+}
+
+export const validarPago = (id: string) => setPagoEstado(id, "Validado");
+export const rechazarPago = (id: string) => setPagoEstado(id, "Rechazado");
+export const anularPago = (id: string) => setPagoEstado(id, "Anulado");
 
 // ---------- Mensualidades ----------
 const MESES = [
@@ -224,6 +271,67 @@ export function generarMensualidadesDelMes(): { creadas: number; mes: string; an
   }
 
   return { creadas: nuevas.length, mes, anio };
+}
+
+// ---------- Editar / pagar mensualidad ----------
+export interface MensualidadPatch {
+  base?: number;
+  descuento?: number;
+  mora?: number;
+  fechaLimite?: string;
+  estado?: MensualidadEstado;
+}
+
+export function updateMensualidad(id: string, patch: MensualidadPatch) {
+  setState({
+    ...state,
+    mensualidades: state.mensualidades.map((m) => {
+      if (m.id !== id) return m;
+      const base = patch.base ?? m.base;
+      const descuento = patch.descuento ?? m.descuento;
+      const mora = patch.mora ?? m.mora;
+      return {
+        ...m,
+        base,
+        descuento,
+        mora,
+        total: base - descuento + mora,
+        fechaLimite: patch.fechaLimite ?? m.fechaLimite,
+        estado: patch.estado ?? m.estado,
+      };
+    }),
+  });
+}
+
+// Marca una mensualidad como pagada: crea un pago validado (que reduce el balance)
+// y actualiza el estado de la mensualidad.
+export function marcarMensualidadPagada(id: string): Pago | null {
+  const m = state.mensualidades.find((x) => x.id === id);
+  if (!m || m.estado === "Pagado") return null;
+  const pago = addPago({
+    estudianteId: m.estudianteId,
+    concepto: `Mensualidad ${m.mes} ${m.anio}`,
+    monto: m.total,
+    metodo: "Efectivo",
+    estado: "Validado",
+  });
+  setState({
+    ...state,
+    mensualidades: state.mensualidades.map((x) => (x.id === id ? { ...x, estado: "Pagado" } : x)),
+  });
+  return pago;
+}
+
+// ---------- Datos demo ----------
+export function resetDemo() {
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+  setState(seedState());
 }
 
 // ---------- Lookups ----------

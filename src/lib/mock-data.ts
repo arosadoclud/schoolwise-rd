@@ -33,10 +33,15 @@ export interface Mensualidad {
   mes: string; anio: number; base: number; descuento: number; mora: number;
   total: number; fechaLimite: string; estado: MensualidadEstado;
 }
+export interface PagoEvento {
+  tipo: "Creado" | "Validado" | "Rechazado" | "Anulado";
+  fecha: string;
+}
 export interface Pago {
   id: string; recibo: string; estudianteId: string; tutorId: string;
   concepto: string; monto: number; metodo: MetodoPago;
   banco?: string; referencia?: string; fecha: string; estado: PagoEstado;
+  historial?: PagoEvento[];
 }
 export interface Acuerdo {
   id: string; estudianteId: string; tutorId: string; adeudado: number; acordado: number;

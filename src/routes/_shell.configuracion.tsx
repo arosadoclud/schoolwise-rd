@@ -1,13 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { RotateCcw } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { configuracionDefault } from "@/lib/mock-data";
+import { resetDemo } from "@/lib/store";
 
 export const Route = createFileRoute("/_shell/configuracion")({
   head: () => ({ meta: [{ title: "Configuración — SchoolPay RD" }] }),
@@ -16,7 +22,14 @@ export const Route = createFileRoute("/_shell/configuracion")({
 
 function ConfigPage() {
   const [cfg, setCfg] = useState(configuracionDefault);
+  const [resetOpen, setResetOpen] = useState(false);
   const set = <K extends keyof typeof cfg>(k: K, v: (typeof cfg)[K]) => setCfg({ ...cfg, [k]: v });
+
+  function doReset() {
+    resetDemo();
+    setResetOpen(false);
+    toast.success("Datos demo reiniciados a su estado inicial.");
+  }
 
   return (
     <div className="space-y-6">
@@ -79,7 +92,36 @@ function ConfigPage() {
             <div><Label>Mensaje de bienvenida para padres</Label><Textarea rows={3} value={cfg.mensajeBienvenida} onChange={(e) => set("mensajeBienvenida", e.target.value)} /></div>
           </CardContent>
         </Card>
+
+        <Card className="border-destructive/40 lg:col-span-2">
+          <CardHeader><CardTitle>Datos demo</CardTitle></CardHeader>
+          <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Toda la información (estudiantes, pagos y mensualidades) se guarda localmente en este navegador.
+              Reinícialos para volver a los datos iniciales de la demo.
+            </p>
+            <Button variant="outline" className="border-destructive/50 text-destructive hover:bg-destructive/10" onClick={() => setResetOpen(true)} data-testid="reiniciar-datos-btn">
+              <RotateCcw className="h-4 w-4" /> Reiniciar datos demo
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+
+      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+        <AlertDialogContent data-testid="reiniciar-datos-dialog">
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Reiniciar los datos demo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se borrarán todos los cambios locales (estudiantes, pagos y mensualidades) y se restaurarán
+              los datos iniciales. Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="cancelar-reiniciar-btn">Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={doReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="confirmar-reiniciar-btn">Reiniciar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

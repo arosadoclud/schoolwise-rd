@@ -14,11 +14,14 @@ import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShellPagosRouteImport } from './routes/_shell.pagos'
 import { Route as ShellPadresRouteImport } from './routes/_shell.padres'
+import { Route as ShellMorosidadRouteImport } from './routes/_shell.morosidad'
 import { Route as ShellMensualidadesRouteImport } from './routes/_shell.mensualidades'
+import { Route as ShellInscripcionesRouteImport } from './routes/_shell.inscripciones'
 import { Route as ShellEstudiantesRouteImport } from './routes/_shell.estudiantes'
 import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
 import { Route as ShellCursosRouteImport } from './routes/_shell.cursos'
 import { Route as ShellConceptosRouteImport } from './routes/_shell.conceptos'
+import { Route as ShellAcuerdosRouteImport } from './routes/_shell.acuerdos'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -44,9 +47,19 @@ const ShellPadresRoute = ShellPadresRouteImport.update({
   path: '/padres',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellMorosidadRoute = ShellMorosidadRouteImport.update({
+  id: '/morosidad',
+  path: '/morosidad',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellMensualidadesRoute = ShellMensualidadesRouteImport.update({
   id: '/mensualidades',
   path: '/mensualidades',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellInscripcionesRoute = ShellInscripcionesRouteImport.update({
+  id: '/inscripciones',
+  path: '/inscripciones',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellEstudiantesRoute = ShellEstudiantesRouteImport.update({
@@ -69,26 +82,37 @@ const ShellConceptosRoute = ShellConceptosRouteImport.update({
   path: '/conceptos',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellAcuerdosRoute = ShellAcuerdosRouteImport.update({
+  id: '/acuerdos',
+  path: '/acuerdos',
+  getParentRoute: () => ShellRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/acuerdos': typeof ShellAcuerdosRoute
   '/conceptos': typeof ShellConceptosRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/inscripciones': typeof ShellInscripcionesRoute
   '/mensualidades': typeof ShellMensualidadesRoute
+  '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/acuerdos': typeof ShellAcuerdosRoute
   '/conceptos': typeof ShellConceptosRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/inscripciones': typeof ShellInscripcionesRoute
   '/mensualidades': typeof ShellMensualidadesRoute
+  '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
 }
@@ -97,11 +121,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_shell': typeof ShellRouteWithChildren
   '/login': typeof LoginRoute
+  '/_shell/acuerdos': typeof ShellAcuerdosRoute
   '/_shell/conceptos': typeof ShellConceptosRoute
   '/_shell/cursos': typeof ShellCursosRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/estudiantes': typeof ShellEstudiantesRoute
+  '/_shell/inscripciones': typeof ShellInscripcionesRoute
   '/_shell/mensualidades': typeof ShellMensualidadesRoute
+  '/_shell/morosidad': typeof ShellMorosidadRoute
   '/_shell/padres': typeof ShellPadresRoute
   '/_shell/pagos': typeof ShellPagosRoute
 }
@@ -110,22 +137,28 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/acuerdos'
     | '/conceptos'
     | '/cursos'
     | '/dashboard'
     | '/estudiantes'
+    | '/inscripciones'
     | '/mensualidades'
+    | '/morosidad'
     | '/padres'
     | '/pagos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/acuerdos'
     | '/conceptos'
     | '/cursos'
     | '/dashboard'
     | '/estudiantes'
+    | '/inscripciones'
     | '/mensualidades'
+    | '/morosidad'
     | '/padres'
     | '/pagos'
   id:
@@ -133,11 +166,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_shell'
     | '/login'
+    | '/_shell/acuerdos'
     | '/_shell/conceptos'
     | '/_shell/cursos'
     | '/_shell/dashboard'
     | '/_shell/estudiantes'
+    | '/_shell/inscripciones'
     | '/_shell/mensualidades'
+    | '/_shell/morosidad'
     | '/_shell/padres'
     | '/_shell/pagos'
   fileRoutesById: FileRoutesById
@@ -185,11 +221,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellPadresRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/morosidad': {
+      id: '/_shell/morosidad'
+      path: '/morosidad'
+      fullPath: '/morosidad'
+      preLoaderRoute: typeof ShellMorosidadRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/mensualidades': {
       id: '/_shell/mensualidades'
       path: '/mensualidades'
       fullPath: '/mensualidades'
       preLoaderRoute: typeof ShellMensualidadesRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/inscripciones': {
+      id: '/_shell/inscripciones'
+      path: '/inscripciones'
+      fullPath: '/inscripciones'
+      preLoaderRoute: typeof ShellInscripcionesRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/estudiantes': {
@@ -220,25 +270,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellConceptosRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/acuerdos': {
+      id: '/_shell/acuerdos'
+      path: '/acuerdos'
+      fullPath: '/acuerdos'
+      preLoaderRoute: typeof ShellAcuerdosRouteImport
+      parentRoute: typeof ShellRoute
+    }
   }
 }
 
 interface ShellRouteChildren {
+  ShellAcuerdosRoute: typeof ShellAcuerdosRoute
   ShellConceptosRoute: typeof ShellConceptosRoute
   ShellCursosRoute: typeof ShellCursosRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
   ShellEstudiantesRoute: typeof ShellEstudiantesRoute
+  ShellInscripcionesRoute: typeof ShellInscripcionesRoute
   ShellMensualidadesRoute: typeof ShellMensualidadesRoute
+  ShellMorosidadRoute: typeof ShellMorosidadRoute
   ShellPadresRoute: typeof ShellPadresRoute
   ShellPagosRoute: typeof ShellPagosRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
+  ShellAcuerdosRoute: ShellAcuerdosRoute,
   ShellConceptosRoute: ShellConceptosRoute,
   ShellCursosRoute: ShellCursosRoute,
   ShellDashboardRoute: ShellDashboardRoute,
   ShellEstudiantesRoute: ShellEstudiantesRoute,
+  ShellInscripcionesRoute: ShellInscripcionesRoute,
   ShellMensualidadesRoute: ShellMensualidadesRoute,
+  ShellMorosidadRoute: ShellMorosidadRoute,
   ShellPadresRoute: ShellPadresRoute,
   ShellPagosRoute: ShellPagosRoute,
 }

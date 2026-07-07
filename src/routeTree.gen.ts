@@ -13,16 +13,21 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShellTransporteRouteImport } from './routes/_shell.transporte'
+import { Route as ShellReportesRouteImport } from './routes/_shell.reportes'
 import { Route as ShellPagosRouteImport } from './routes/_shell.pagos'
 import { Route as ShellPadresRouteImport } from './routes/_shell.padres'
 import { Route as ShellMorosidadRouteImport } from './routes/_shell.morosidad'
 import { Route as ShellMensualidadesRouteImport } from './routes/_shell.mensualidades'
 import { Route as ShellInscripcionesRouteImport } from './routes/_shell.inscripciones'
+import { Route as ShellGastosRouteImport } from './routes/_shell.gastos'
 import { Route as ShellEstudiantesRouteImport } from './routes/_shell.estudiantes'
+import { Route as ShellDireccionRouteImport } from './routes/_shell.direccion'
 import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
 import { Route as ShellCursosRouteImport } from './routes/_shell.cursos'
+import { Route as ShellConfiguracionRouteImport } from './routes/_shell.configuracion'
 import { Route as ShellConceptosRouteImport } from './routes/_shell.conceptos'
 import { Route as ShellComunicadosRouteImport } from './routes/_shell.comunicados'
+import { Route as ShellCajaRouteImport } from './routes/_shell.caja'
 import { Route as ShellAsistenciaRouteImport } from './routes/_shell.asistencia'
 import { Route as ShellAcuerdosRouteImport } from './routes/_shell.acuerdos'
 
@@ -43,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
 const ShellTransporteRoute = ShellTransporteRouteImport.update({
   id: '/transporte',
   path: '/transporte',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellReportesRoute = ShellReportesRouteImport.update({
+  id: '/reportes',
+  path: '/reportes',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellPagosRoute = ShellPagosRouteImport.update({
@@ -70,9 +80,19 @@ const ShellInscripcionesRoute = ShellInscripcionesRouteImport.update({
   path: '/inscripciones',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellGastosRoute = ShellGastosRouteImport.update({
+  id: '/gastos',
+  path: '/gastos',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellEstudiantesRoute = ShellEstudiantesRouteImport.update({
   id: '/estudiantes',
   path: '/estudiantes',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellDireccionRoute = ShellDireccionRouteImport.update({
+  id: '/direccion',
+  path: '/direccion',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellDashboardRoute = ShellDashboardRouteImport.update({
@@ -85,6 +105,11 @@ const ShellCursosRoute = ShellCursosRouteImport.update({
   path: '/cursos',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellConfiguracionRoute = ShellConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellConceptosRoute = ShellConceptosRouteImport.update({
   id: '/conceptos',
   path: '/conceptos',
@@ -93,6 +118,11 @@ const ShellConceptosRoute = ShellConceptosRouteImport.update({
 const ShellComunicadosRoute = ShellComunicadosRouteImport.update({
   id: '/comunicados',
   path: '/comunicados',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellCajaRoute = ShellCajaRouteImport.update({
+  id: '/caja',
+  path: '/caja',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellAsistenciaRoute = ShellAsistenciaRouteImport.update({
@@ -111,16 +141,21 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/acuerdos': typeof ShellAcuerdosRoute
   '/asistencia': typeof ShellAsistenciaRoute
+  '/caja': typeof ShellCajaRoute
   '/comunicados': typeof ShellComunicadosRoute
   '/conceptos': typeof ShellConceptosRoute
+  '/configuracion': typeof ShellConfiguracionRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
+  '/direccion': typeof ShellDireccionRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/gastos': typeof ShellGastosRoute
   '/inscripciones': typeof ShellInscripcionesRoute
   '/mensualidades': typeof ShellMensualidadesRoute
   '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
+  '/reportes': typeof ShellReportesRoute
   '/transporte': typeof ShellTransporteRoute
 }
 export interface FileRoutesByTo {
@@ -128,16 +163,21 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/acuerdos': typeof ShellAcuerdosRoute
   '/asistencia': typeof ShellAsistenciaRoute
+  '/caja': typeof ShellCajaRoute
   '/comunicados': typeof ShellComunicadosRoute
   '/conceptos': typeof ShellConceptosRoute
+  '/configuracion': typeof ShellConfiguracionRoute
   '/cursos': typeof ShellCursosRoute
   '/dashboard': typeof ShellDashboardRoute
+  '/direccion': typeof ShellDireccionRoute
   '/estudiantes': typeof ShellEstudiantesRoute
+  '/gastos': typeof ShellGastosRoute
   '/inscripciones': typeof ShellInscripcionesRoute
   '/mensualidades': typeof ShellMensualidadesRoute
   '/morosidad': typeof ShellMorosidadRoute
   '/padres': typeof ShellPadresRoute
   '/pagos': typeof ShellPagosRoute
+  '/reportes': typeof ShellReportesRoute
   '/transporte': typeof ShellTransporteRoute
 }
 export interface FileRoutesById {
@@ -147,16 +187,21 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_shell/acuerdos': typeof ShellAcuerdosRoute
   '/_shell/asistencia': typeof ShellAsistenciaRoute
+  '/_shell/caja': typeof ShellCajaRoute
   '/_shell/comunicados': typeof ShellComunicadosRoute
   '/_shell/conceptos': typeof ShellConceptosRoute
+  '/_shell/configuracion': typeof ShellConfiguracionRoute
   '/_shell/cursos': typeof ShellCursosRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
+  '/_shell/direccion': typeof ShellDireccionRoute
   '/_shell/estudiantes': typeof ShellEstudiantesRoute
+  '/_shell/gastos': typeof ShellGastosRoute
   '/_shell/inscripciones': typeof ShellInscripcionesRoute
   '/_shell/mensualidades': typeof ShellMensualidadesRoute
   '/_shell/morosidad': typeof ShellMorosidadRoute
   '/_shell/padres': typeof ShellPadresRoute
   '/_shell/pagos': typeof ShellPagosRoute
+  '/_shell/reportes': typeof ShellReportesRoute
   '/_shell/transporte': typeof ShellTransporteRoute
 }
 export interface FileRouteTypes {
@@ -166,16 +211,21 @@ export interface FileRouteTypes {
     | '/login'
     | '/acuerdos'
     | '/asistencia'
+    | '/caja'
     | '/comunicados'
     | '/conceptos'
+    | '/configuracion'
     | '/cursos'
     | '/dashboard'
+    | '/direccion'
     | '/estudiantes'
+    | '/gastos'
     | '/inscripciones'
     | '/mensualidades'
     | '/morosidad'
     | '/padres'
     | '/pagos'
+    | '/reportes'
     | '/transporte'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -183,16 +233,21 @@ export interface FileRouteTypes {
     | '/login'
     | '/acuerdos'
     | '/asistencia'
+    | '/caja'
     | '/comunicados'
     | '/conceptos'
+    | '/configuracion'
     | '/cursos'
     | '/dashboard'
+    | '/direccion'
     | '/estudiantes'
+    | '/gastos'
     | '/inscripciones'
     | '/mensualidades'
     | '/morosidad'
     | '/padres'
     | '/pagos'
+    | '/reportes'
     | '/transporte'
   id:
     | '__root__'
@@ -201,16 +256,21 @@ export interface FileRouteTypes {
     | '/login'
     | '/_shell/acuerdos'
     | '/_shell/asistencia'
+    | '/_shell/caja'
     | '/_shell/comunicados'
     | '/_shell/conceptos'
+    | '/_shell/configuracion'
     | '/_shell/cursos'
     | '/_shell/dashboard'
+    | '/_shell/direccion'
     | '/_shell/estudiantes'
+    | '/_shell/gastos'
     | '/_shell/inscripciones'
     | '/_shell/mensualidades'
     | '/_shell/morosidad'
     | '/_shell/padres'
     | '/_shell/pagos'
+    | '/_shell/reportes'
     | '/_shell/transporte'
   fileRoutesById: FileRoutesById
 }
@@ -250,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellTransporteRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/reportes': {
+      id: '/_shell/reportes'
+      path: '/reportes'
+      fullPath: '/reportes'
+      preLoaderRoute: typeof ShellReportesRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/pagos': {
       id: '/_shell/pagos'
       path: '/pagos'
@@ -285,11 +352,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellInscripcionesRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/gastos': {
+      id: '/_shell/gastos'
+      path: '/gastos'
+      fullPath: '/gastos'
+      preLoaderRoute: typeof ShellGastosRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/estudiantes': {
       id: '/_shell/estudiantes'
       path: '/estudiantes'
       fullPath: '/estudiantes'
       preLoaderRoute: typeof ShellEstudiantesRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/direccion': {
+      id: '/_shell/direccion'
+      path: '/direccion'
+      fullPath: '/direccion'
+      preLoaderRoute: typeof ShellDireccionRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/dashboard': {
@@ -306,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellCursosRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/configuracion': {
+      id: '/_shell/configuracion'
+      path: '/configuracion'
+      fullPath: '/configuracion'
+      preLoaderRoute: typeof ShellConfiguracionRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/conceptos': {
       id: '/_shell/conceptos'
       path: '/conceptos'
@@ -318,6 +406,13 @@ declare module '@tanstack/react-router' {
       path: '/comunicados'
       fullPath: '/comunicados'
       preLoaderRoute: typeof ShellComunicadosRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/caja': {
+      id: '/_shell/caja'
+      path: '/caja'
+      fullPath: '/caja'
+      preLoaderRoute: typeof ShellCajaRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/asistencia': {
@@ -340,32 +435,42 @@ declare module '@tanstack/react-router' {
 interface ShellRouteChildren {
   ShellAcuerdosRoute: typeof ShellAcuerdosRoute
   ShellAsistenciaRoute: typeof ShellAsistenciaRoute
+  ShellCajaRoute: typeof ShellCajaRoute
   ShellComunicadosRoute: typeof ShellComunicadosRoute
   ShellConceptosRoute: typeof ShellConceptosRoute
+  ShellConfiguracionRoute: typeof ShellConfiguracionRoute
   ShellCursosRoute: typeof ShellCursosRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
+  ShellDireccionRoute: typeof ShellDireccionRoute
   ShellEstudiantesRoute: typeof ShellEstudiantesRoute
+  ShellGastosRoute: typeof ShellGastosRoute
   ShellInscripcionesRoute: typeof ShellInscripcionesRoute
   ShellMensualidadesRoute: typeof ShellMensualidadesRoute
   ShellMorosidadRoute: typeof ShellMorosidadRoute
   ShellPadresRoute: typeof ShellPadresRoute
   ShellPagosRoute: typeof ShellPagosRoute
+  ShellReportesRoute: typeof ShellReportesRoute
   ShellTransporteRoute: typeof ShellTransporteRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
   ShellAcuerdosRoute: ShellAcuerdosRoute,
   ShellAsistenciaRoute: ShellAsistenciaRoute,
+  ShellCajaRoute: ShellCajaRoute,
   ShellComunicadosRoute: ShellComunicadosRoute,
   ShellConceptosRoute: ShellConceptosRoute,
+  ShellConfiguracionRoute: ShellConfiguracionRoute,
   ShellCursosRoute: ShellCursosRoute,
   ShellDashboardRoute: ShellDashboardRoute,
+  ShellDireccionRoute: ShellDireccionRoute,
   ShellEstudiantesRoute: ShellEstudiantesRoute,
+  ShellGastosRoute: ShellGastosRoute,
   ShellInscripcionesRoute: ShellInscripcionesRoute,
   ShellMensualidadesRoute: ShellMensualidadesRoute,
   ShellMorosidadRoute: ShellMorosidadRoute,
   ShellPadresRoute: ShellPadresRoute,
   ShellPagosRoute: ShellPagosRoute,
+  ShellReportesRoute: ShellReportesRoute,
   ShellTransporteRoute: ShellTransporteRoute,
 }
 

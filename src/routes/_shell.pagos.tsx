@@ -135,7 +135,6 @@ function PagosPage() {
             </TableHeader>
             <TableBody data-testid="pagos-tbody">
               {pagos.map((p) => {
-                const puedeRecibo = p.estado === "Validado";
                 return (
                   <TableRow key={p.id} data-testid={`pago-row-${p.id}`}>
                     <TableCell className="font-mono text-xs">{p.recibo}</TableCell>
@@ -157,7 +156,7 @@ function PagosPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button size="sm" variant="outline" disabled={!puedeRecibo} onClick={() => setReciboId(p.id)} data-testid={`ver-recibo-${p.id}`} title={puedeRecibo ? "Ver recibo" : "Recibo disponible solo para pagos validados"}>
+                        <Button size="sm" variant="outline" onClick={() => setReciboId(p.id)} data-testid={`ver-recibo-${p.id}`} title={p.estado === "Validado" ? "Ver recibo" : "Ver comprobante (no válido como recibo)"}>
                           <Printer className="h-4 w-4" /> Recibo
                         </Button>
                         <DropdownMenu>

@@ -28,6 +28,17 @@ principales usando estado local, SIN backend ni Supabase. No cambiar el diseño.
 ## Credenciales demo
 admin@schoolpayrd.com / Admin123!  (ver /app/memory/test_credentials.md)
 
+## Implementado — Iteración 2 (2026-07-08): ciclo de cobros
+- [x] Pagos con estados Pendiente/Validado/Rechazado/Anulado + acciones Validar/Rechazar/Anular (dropdown).
+- [x] Validar pendiente reduce balance; anular validado revierte balance; rechazar no afecta (store.setPagoEstado).
+- [x] Confirmación (AlertDialog) antes de anular o rechazar.
+- [x] Historial por pago (Creado/Validado/Rechazado/Anulado con fecha) en columna Estado/Historial.
+- [x] Mensualidades editables (base, descuento, mora, fecha límite, estado) con total = base − descuento + mora en vivo.
+- [x] "Marcar como pagada" en mensualidad crea pago validado automático y reduce balance.
+- [x] Recibo imprimible solo si Validado; para pendiente/rechazado/anulado muestra marca "No válido como recibo" (Imprimir deshabilitado).
+- [x] Configuración: "Reiniciar datos demo" con confirmación que limpia localStorage y restaura semilla (store.resetDemo).
+- Testing agent (iteration_2): todos los escenarios PASS (UI + revisión de código). Sin bugs de app.
+
 ## Backlog / próximos pasos
 - P1: Conectar backend real (FastAPI + Mongo) reemplazando el store local.
 - P2: CRUD funcional en el resto de módulos (padres, cursos, conceptos, gastos, acuerdos, inscripciones).
